@@ -1,0 +1,28 @@
+  syntax = "proto3";
+
+  package greeter.v1;
+
+  // GreeterService: one quick call and one long-lived stream, so graceful
+  // shutdown has something to drain.
+  service GreeterService {
+    // Greet has no side effects, so the mesh may retry it.
+    rpc Greet(GreetRequest) returns (GreetResponse) {
+      option idempotency_level = NO_SIDE_EFFECTS;
+    }
+    // Subscribe streams greetings until the client leaves. On shutdown the
+    // platform ends it, so the client reconnects to another replica.
+    rpc Subscribe(SubscribeRequest) returns (stream GreetResponse);
+  }
+
+  message GreetRequest {
+    string name = 1;
+  }
+
+  message SubscribeRequest {
+    string name = 1;
+    int32 interval_ms = 2;
+  }
+
+  message GreetResponse {
+    string message = 1;
+  }

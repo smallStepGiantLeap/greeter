@@ -1,0 +1,15 @@
+  # service.yaml: the only configuration the greeter team writes.
+  apiVersion: vikrant.smallstepgiantleap.dev/v1alpha1
+  kind: Service
+  metadata:
+    name: greeter
+  spec:
+    language: go
+    proto: proto/greeter/v1/greeter.proto
+    scaling:                      # production; dev and staging run smaller
+      minReplicas: 3
+      maxReplicas: 12
+      inflightPerPod: 200         # autoscale on in-flight RPCs, not CPU
+    environments:                 # only scale and rollout pace may differ
+      staging:
+        scaling: {minReplicas: 2, maxReplicas: 4}
